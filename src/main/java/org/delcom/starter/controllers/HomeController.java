@@ -210,8 +210,6 @@ public class HomeController {
         }
     }
 
-    // PERUBAHAN ADA DISINI: GANTIKAN SELURUH METODE INI DENGAN VERSI FINAL YANG
-    // BENAR
     @GetMapping("/palingTer/{strBase64}")
     public String palingTer(@PathVariable String strBase64) {
         try {
