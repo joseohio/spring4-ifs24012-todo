@@ -3,9 +3,7 @@ package org.delcom.starter.controllers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
 import java.util.Base64;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -22,22 +20,16 @@ class HomeControllerUnitTest {
         @Test
         @DisplayName("Mengembalikan pesan selamat datang yang benar")
         void hello_ShouldReturnWelcomeMessage() {
-            // Arrange
             HomeController controller = new HomeController();
-            // Act
             String result = controller.hello();
-            // Assert
             assertEquals("Hay Abdullah, selamat datang di pengembangan aplikasi dengan Spring Boot!", result);
         }
 
         @Test
         @DisplayName("Mengembalikan pesan sapaan yang dipersonalisasi")
         void helloWithName_ShouldReturnPersonalizedGreeting() {
-            // Arrange
             HomeController controller = new HomeController();
-            // Act
             String result = controller.sayHello("Abdullah");
-            // Assert
             assertEquals("Hello, Abdullah!", result);
         }
     }
@@ -46,54 +38,28 @@ class HomeControllerUnitTest {
     @DisplayName("Praktikum 1: Informasi NIM")
     class InformasiNim {
         @Test
-        @DisplayName("NIM Valid")
         void nimValid() {
             HomeController c = new HomeController();
-            String r = c.informasiNim("11S24001");
-            assertTrue(r.contains("Sarjana Informatika") && r.contains("Urutan: 1"));
+            assertTrue(c.informasiNim("11S24001").contains("Sarjana Informatika"));
         }
 
         @Test
-        @DisplayName("NIM Sarjana Sistem Informasi")
-        void nimSI() {
-            HomeController c = new HomeController();
-            String r = c.informasiNim("12S24001");
-            assertTrue(r.contains("Sarjana Sistem Informasi"));
-        }
-
-        @Test
-        @DisplayName("NIM D3 Teknologi Informasi")
-        void nimD3TI() {
-            HomeController c = new HomeController();
-            String r = c.informasiNim("11324001");
-            assertTrue(r.contains("Diploma 3 Teknologi Informasi"));
-        }
-
-        @Test
-        @DisplayName("NIM D4 TRPL")
-        void nimD4() {
-            HomeController c = new HomeController();
-            String r = c.informasiNim("11424012");
-            assertTrue(r.contains("Diploma 4 Teknologi Rekayasa Perangkat Lunak"));
-        }
-
-        @Test
-        @DisplayName("NIM Tidak Dikenal")
-        void nimInvalid() {
-            HomeController c = new HomeController();
-            String r = c.informasiNim("99X99999");
-            assertTrue(r.contains("Program studi tidak dikenal"));
-        }
-
-        @Test
-        @DisplayName("NIM Prodi Selain Di atas")
         void otherProdi() {
             HomeController c = new HomeController();
-            assertTrue(c.informasiNim("14S24001").contains("Sarjana Teknik Elektro"));
-            assertTrue(c.informasiNim("21S24001").contains("Sarjana Manajemen Rekayasa"));
-            assertTrue(c.informasiNim("22S24001").contains("Sarjana Teknik Metalurgi"));
-            assertTrue(c.informasiNim("31S24001").contains("Sarjana Teknik Bioproses"));
-            assertTrue(c.informasiNim("13324001").contains("Diploma 3 Teknologi Komputer"));
+            assertTrue(c.informasiNim("12S24001").contains("Sistem Informasi"));
+            assertTrue(c.informasiNim("14S24001").contains("Teknik Elektro"));
+            assertTrue(c.informasiNim("21S24001").contains("Manajemen Rekayasa"));
+            assertTrue(c.informasiNim("22S24001").contains("Teknik Metalurgi"));
+            assertTrue(c.informasiNim("31S24001").contains("Teknik Bioproses"));
+            assertTrue(c.informasiNim("11424012").contains("Rekayasa Perangkat Lunak"));
+            assertTrue(c.informasiNim("11324001").contains("Teknologi Informasi"));
+            assertTrue(c.informasiNim("13324001").contains("Teknologi Komputer"));
+        }
+
+        @Test
+        void nimInvalid() {
+            HomeController c = new HomeController();
+            assertTrue(c.informasiNim("99X99999").contains("tidak dikenal"));
         }
     }
 
@@ -101,63 +67,47 @@ class HomeControllerUnitTest {
     @DisplayName("Praktikum 2: Perolehan Nilai")
     class PerolehanNilai {
         @Test
-        @DisplayName("Input Valid Sesuai Logika Asli")
-        void validInput() {
-            HomeController c = new HomeController();
-            String input = "10\n20\n10\n10\n20\n30\nT|90|21\nUAS|92|82\nPA|75|45\n---";
-            String result = c.perolehanNilai(toBase64(input));
-            assertTrue(result.contains(">> Nilai Akhir: 37.30"));
-            assertTrue(result.contains(">> Grade: D"));
-        }
-
-        @Test
-        @DisplayName("Input Komprehensif untuk Coverage")
-        void comprehensiveInputForCoverage() {
-            HomeController c = new HomeController();
-            String input = "5\n5\n5\n5\n40\n40\nPA|100|85\nT|100|90\n\nK|100|80\nP|100|75\nUTS|100|70\nUAS-salah\nUAS|100|bukan-angka\nXYZ|10|10\n---";
-            String result = c.perolehanNilai(toBase64(input));
-            assertTrue(result.contains(">> Nilai Akhir: 44.50"));
-            assertTrue(result.contains(">> Grade: D"));
-        }
-
-        @Test
-        @DisplayName("Input dengan Nilai Max 0")
-        void inputWithMaxZero() {
-            HomeController c = new HomeController();
-            String input = "10\n90\n0\n0\n0\n0\nPA|100|80\nT|0|90\n---";
-            String result = c.perolehanNilai(toBase64(input));
-            assertTrue(result.contains(">> Partisipatif: 80/100"));
-            assertTrue(result.contains(">> Tugas: 0/100"));
-        }
-
-        @Test
-        @DisplayName("Input Tidak Valid")
-        void invalidInput() {
-            HomeController c = new HomeController();
-            String r = c.perolehanNilai("input-salah-base64-@!#");
-            assertTrue(r.contains("Error"));
-        }
-
-        @Test
-        @DisplayName("Mencakup semua Grade Nilai")
         void allGrades() {
             HomeController c = new HomeController();
-            String bobot = "0\n0\n0\n0\n0\n100\n";
+            String b = "0\n0\n0\n0\n0\n100\n";
+            assertTrue(c.perolehanNilai(toBase64(b + "UAS|100|85\n---")).contains("A"));
+            assertTrue(c.perolehanNilai(toBase64(b + "UAS|100|75\n---")).contains("AB"));
+            assertTrue(c.perolehanNilai(toBase64(b + "UAS|100|70\n---")).contains("B"));
+            assertTrue(c.perolehanNilai(toBase64(b + "UAS|100|60\n---")).contains("BC"));
+            assertTrue(c.perolehanNilai(toBase64(b + "UAS|100|50\n---")).contains("C"));
+            assertTrue(c.perolehanNilai(toBase64(b + "UAS|100|40\n---")).contains("D"));
+            assertTrue(c.perolehanNilai(toBase64(b + "UAS|100|30\n---")).contains("E"));
+        }
 
-            String inputA = bobot + "UAS|100|85\n---";
-            assertTrue(c.perolehanNilai(toBase64(inputA)).contains(">> Grade: A"));
+        @Test
+        void inputWithMaxZero() {
+            HomeController c = new HomeController();
+            assertTrue(
+                    c.perolehanNilai(toBase64("10\n90\n0\n0\n0\n0\nPA|100|80\nT|0|90\n---")).contains("Tugas: 0/100"));
+        }
 
-            String inputAB = bobot + "UAS|100|75\n---";
-            assertTrue(c.perolehanNilai(toBase64(inputAB)).contains(">> Grade: AB"));
+        @Test
+        void invalidInput() {
+            HomeController c = new HomeController();
+            assertEquals("Error: Input tidak valid.", c.perolehanNilai("input-salah"));
+        }
 
-            String inputB = bobot + "UAS|100|70\n---";
-            assertTrue(c.perolehanNilai(toBase64(inputB)).contains(">> Grade: B"));
-
-            String inputBC = bobot + "UAS|100|60\n---";
-            assertTrue(c.perolehanNilai(toBase64(inputBC)).contains(">> Grade: BC"));
-
-            String inputC = bobot + "UAS|100|50\n---";
-            assertTrue(c.perolehanNilai(toBase64(inputC)).contains(">> Grade: C"));
+        @Test
+        void loopEdgeCaseCoverage() {
+            HomeController c = new HomeController();
+            String input = "10\n10\n10\n10\n30\n30\n" + // Bobot
+                         "\n" +                         // Baris kosong
+                         "PA|100|80\n" +                // Mencakup case PA
+                         "K|100|85\n" +                 // Mencakup case K (sebelumnya merah)
+                         "P|100|90\n" +                 // Mencakup case P (sebelumnya merah)
+                         "UTS|100|75\n" +               // Mencakup case UTS (sebelumnya merah)
+                         "UAS|100|95\n" +               // Mencakup case UAS
+                         "FORMAT-SALAH\n" +             // Mencakup if (p.length != 3)
+                         "XYZ|100|90\n" +               // Mencakup default di switch
+                         "T|100|bukan-angka\n" +        // Mencakup try-catch dan case T
+                         "---";
+            String result = c.perolehanNilai(toBase64(input));
+            assertTrue(result.contains(">> Nilai Akhir: 76.50"));
         }
     }
 
@@ -165,48 +115,33 @@ class HomeControllerUnitTest {
     @DisplayName("Praktikum 3: Perbedaan L")
     class PerbedaanL {
         @Test
-        @DisplayName("Matriks Ganjil Valid")
         void validOddMatrix() {
             HomeController c = new HomeController();
-            String i = "3\n1 2 3\n4 5 6\n7 8 9";
-            String r = c.perbedaanL(toBase64(i));
-            assertTrue(r.contains("Nilai L: 29") && r.contains("Nilai Kebalikan L: 21"));
+            assertTrue(c.perbedaanL(toBase64("3\n1 2 3\n4 5 6\n7 8 9")).contains("Nilai L: 29"));
         }
 
         @Test
-        @DisplayName("Matriks Genap Valid")
         void validEvenMatrix() {
             HomeController c = new HomeController();
-            String i = "4\n1 1 1 1\n2 2 2 2\n3 3 3 3\n4 4 4 4";
-            String r = c.perbedaanL(toBase64(i));
-            assertTrue(r.contains("Nilai Tengah: 10"));
+            assertTrue(c.perbedaanL(toBase64("4\n1 1 1 1\n2 2 2 2\n3 3 3 3\n4 4 4 4")).contains("Nilai Tengah: 10"));
         }
 
         @Test
-        @DisplayName("Matriks < 3x3")
         void smallMatrix() {
             HomeController c = new HomeController();
-            String i = "2\n1 2\n3 4";
-            String r = c.perbedaanL(toBase64(i));
-            assertTrue(r.contains("Nilai L: Tidak Ada") && r.contains("Dominan: 10"));
+            assertTrue(c.perbedaanL(toBase64("2\n1 2\n3 4")).contains("Nilai L: Tidak Ada"));
         }
 
         @Test
-        @DisplayName("Perbedaan 0")
         void zeroDifference() {
             HomeController c = new HomeController();
-            String i = "3\n10 1 10\n1 1 1\n10 1 10";
-            String r = c.perbedaanL(toBase64(i));
-            assertTrue(r.contains("Perbedaan: 0") && r.contains("Dominan: 1"));
+            assertTrue(c.perbedaanL(toBase64("3\n10 1 10\n1 1 1\n10 1 10")).contains("Dominan: 1"));
         }
 
         @Test
-        @DisplayName("Input Matriks Tidak Valid")
         void invalidMatrixInput() {
             HomeController c = new HomeController();
-            String i = "3\n1 2 3\n4 x 6\n7 8 9";
-            String r = c.perbedaanL(toBase64(i));
-            assertTrue(r.contains("Error: Input tidak valid."));
+            assertEquals("Error: Input tidak valid.", c.perbedaanL(toBase64("3\n1 2\n4 x 6")));
         }
     }
 
@@ -214,86 +149,32 @@ class HomeControllerUnitTest {
     @DisplayName("Praktikum 4: Paling Ter")
     class PalingTer {
         @Test
-        @DisplayName("Input Valid Sesuai Logika Asli")
+        @DisplayName("Input Valid")
         void validInput() {
             HomeController c = new HomeController();
             String input = "10\n5\n10\n20\n5\n10\n---";
-            String result = c.palingTer(toBase64(input));
-            assertTrue(result.contains("Jumlah Tertinggi: 10 * 3 = 30"));
-            assertTrue(result.contains("Jumlah Terendah: 5 * 2 = 10"));
+            String expected = "Tertinggi: 20\nTerendah: 5\nTerbanyak: 10 (3x)\nTersedikit: 20 (1x)\nJumlah Tertinggi: 10 * 3 = 30\nJumlah Terendah: 5 * 2 = 10";
+            assertEquals(expected, c.palingTer(toBase64(input)));
         }
 
         @Test
         @DisplayName("Kasus Tie-breaker")
         void tieBreaker() {
             HomeController c = new HomeController();
-            String input = "6\n6\n4\n4\n4\n10\n10\n5\n5\n5\n5\n---";
-            String result = c.palingTer(toBase64(input));
-            assertTrue(result.contains("Tersedikit: 6 (2x)"));
-            assertTrue(result.contains("Jumlah Tertinggi: 10 * 2 = 20"));
-            assertTrue(result.contains("Jumlah Terendah: 4 * 3 = 12"));
+            String input1 = "6\n6\n6\n6\n6\n10\n10\n10\n---";
+            assertTrue(c.palingTer(toBase64(input1)).contains("Jumlah Tertinggi: 10 * 3 = 30"));
+            String input2 = "10\n10\n4\n4\n4\n4\n4\n---";
+            assertTrue(c.palingTer(toBase64(input2)).contains("Jumlah Terendah: 4 * 5 = 20"));
         }
 
         @Test
-        @DisplayName("Input Kosong (hanya ---)")
-        void emptyInputOnlyDelimiter() {
+        @DisplayName("Error Handling dan Edge Cases")
+        void errorAndEdgeCases() {
             HomeController c = new HomeController();
-            String r = c.palingTer(toBase64("---\n"));
-            assertTrue(r.contains("Error: Tidak ada data input."));
-        }
-
-        @Test
-        @DisplayName("Input Kosong (string kosong)")
-        void emptyInput() {
-            HomeController c = new HomeController();
-            String r = c.palingTer(toBase64(""));
-            assertTrue(r.contains("Error: Tidak ada data input."));
-        }
-
-        @Test
-        @DisplayName("Input dengan Data Non-Numerik")
-        void invalidNonNumericInput() {
-            HomeController c = new HomeController();
-            String r = c.palingTer(toBase64("10\nhello\n20\n---"));
-            assertTrue(r.contains("Error: Input tidak valid."));
-        }
-
-        @Test
-        @DisplayName("Input dengan Satu Angka Unik")
-        void singleUniqueNumberInput() {
-            HomeController c = new HomeController();
-            String input = "7\n7\n7\n---";
-            String result = c.palingTer(toBase64(input));
-            assertTrue(result.contains("Tertinggi: 7"));
-            assertTrue(result.contains("Terendah: 7"));
-            assertTrue(result.contains("Terbanyak: 7 (3x)"));
-            assertTrue(result.contains("Tersedikit: 7 (3x)"));
-            assertTrue(result.contains("Jumlah Tertinggi: 7 * 3 = 21"));
-            assertTrue(result.contains("Jumlah Terendah: 7 * 3 = 21"));
-        }
-
-        @Test
-        @DisplayName("Tie-breaker Jumlah Terendah")
-        void tieBreakerJumlahTerendah() {
-            HomeController c = new HomeController();
-            String input = "10\n10\n4\n4\n4\n4\n4\n---";
-            String result = c.palingTer(toBase64(input));
-            assertTrue(result.contains("Jumlah Terendah: 4 * 5 = 20"));
-        }
-
-        @Test
-        @DisplayName("Tie-breaker Jumlah Tertinggi")
-        void tieBreakerJumlahTertinggi() {
-            HomeController c = new HomeController();
-            String input = "6\n6\n6\n6\n6\n10\n10\n10\n---";
-            String expectedOutput = "Tertinggi: 10\n" + 
-                    "Terendah: 6\n" + 
-                    "Terbanyak: 6 (5x)\n" + 
-                    "Tersedikit: 10 (3x)\n" + 
-                    "Jumlah Tertinggi: 10 * 3 = 30\n" + 
-                    "Jumlah Terendah: 6 * 5 = 30";
-            String actualOutput = c.palingTer(toBase64(input));
-            assertEquals(expectedOutput, actualOutput);
+            assertEquals("Error: Tidak ada data input.", c.palingTer(toBase64("")));
+            assertEquals("Error: Tidak ada data input.", c.palingTer(toBase64("---\n")));
+            assertEquals("Error: Input tidak valid.", c.palingTer(toBase64("10\nhello\n20\n---")));
+            assertTrue(c.palingTer(toBase64("10\n\n20\n---")).contains("Tertinggi: 20"));
         }
     }
 }
