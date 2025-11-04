@@ -44,7 +44,7 @@ class HomeControllerUnitTest {
         }
 
         @Test
-        void otherProdi() {
+        void otherProdi() {   // localhost:8080/informasiNim/11S24012
             HomeController c = new HomeController();
             assertTrue(c.informasiNim("12S24001").contains("Sistem Informasi"));
             assertTrue(c.informasiNim("14S24001").contains("Teknik Elektro"));
@@ -109,6 +109,17 @@ class HomeControllerUnitTest {
             String result = c.perolehanNilai(toBase64(input));
             assertTrue(result.contains(">> Nilai Akhir: 76.50"));
         }
+
+        @Test
+        @DisplayName("Menangani input tanpa garis terminator ---")
+        void handleInputWithoutTerminator() {
+            HomeController c = new HomeController();
+            String input = "10\n10\n10\n10\n30\n30\n" + // Bobot
+                        "PA|100|80\n" +
+                        "UAS|100|95";
+            String result = c.perolehanNilai(toBase64(input));
+            assertTrue(result.contains(">> Nilai Akhir: 36.50"));
+        }
     }
 
     @Nested
@@ -124,19 +135,21 @@ class HomeControllerUnitTest {
         void validEvenMatrix() {
             HomeController c = new HomeController();
             assertTrue(c.perbedaanL(toBase64("4\n1 1 1 1\n2 2 2 2\n3 3 3 3\n4 4 4 4")).contains("Nilai Tengah: 10"));
-        }
-
+        }   // 1 1 1 1
+            // 2 2 2 2 4x4
+            // 3 3 3 3
+            // 4 4 4 4
         @Test
         void smallMatrix() {
             HomeController c = new HomeController();
             assertTrue(c.perbedaanL(toBase64("2\n1 2\n3 4")).contains("Nilai L: Tidak Ada"));
-        }
+        } 
 
         @Test
         void zeroDifference() {
             HomeController c = new HomeController();
             assertTrue(c.perbedaanL(toBase64("3\n10 1 10\n1 1 1\n10 1 10")).contains("Dominan: 1"));
-        }
+        }  
 
         @Test
         void invalidMatrixInput() {
@@ -152,7 +165,7 @@ class HomeControllerUnitTest {
         @DisplayName("Input Valid")
         void validInput() {
             HomeController c = new HomeController();
-            String input = "10\n5\n10\n20\n5\n10\n---";
+            String input = "10\n5\n10\n20\n5\n10\n---";  
             String expected = "Tertinggi: 20\nTerendah: 5\nTerbanyak: 10 (3x)\nTersedikit: 20 (1x)\nJumlah Tertinggi: 10 * 3 = 30\nJumlah Terendah: 5 * 2 = 10";
             assertEquals(expected, c.palingTer(toBase64(input)));
         }
@@ -161,7 +174,7 @@ class HomeControllerUnitTest {
         @DisplayName("Kasus Tie-breaker")
         void tieBreaker() {
             HomeController c = new HomeController();
-            String input1 = "6\n6\n6\n6\n6\n10\n10\n10\n---";
+            String input1 = "6\n6\n6\n6\n6\n10\n10\n10\n---";  // 30 untuk elemen 6 // 30 untuk elemen 10
             assertTrue(c.palingTer(toBase64(input1)).contains("Jumlah Tertinggi: 10 * 3 = 30"));
             String input2 = "10\n10\n4\n4\n4\n4\n4\n---";
             assertTrue(c.palingTer(toBase64(input2)).contains("Jumlah Terendah: 4 * 5 = 20"));
@@ -175,6 +188,16 @@ class HomeControllerUnitTest {
             assertEquals("Error: Tidak ada data input.", c.palingTer(toBase64("---\n")));
             assertEquals("Error: Input tidak valid.", c.palingTer(toBase64("10\nhello\n20\n---")));
             assertTrue(c.palingTer(toBase64("10\n\n20\n---")).contains("Tertinggi: 20"));
+        }
+
+        @Test
+        @DisplayName("Mencakup Branch Coverage untuk Looping")
+        void branchCoverageForLoops() {
+            HomeController c = new HomeController();
+            String inputData = "5\n5\n10\n10\n10\n20\n---";
+            String result = c.palingTer(toBase64(inputData));
+            assertTrue(result.contains("Terbanyak: 10 (3x)"));
+            assertTrue(result.contains("Tersedikit: 20 (1x)"));
         }
     }
 }
